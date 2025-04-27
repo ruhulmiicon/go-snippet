@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
-	"log/slog"
 	"net/http"
 	"strconv"
 )
@@ -17,14 +15,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	ts, err := template.ParseFiles(tmplFiles...)
 	if err != nil {
-		log.Print(err.Error())
-		app.logger.Error(err.Error(), slog.Any("method", r.Method), slog.Any("url", r.URL.RequestURI()))
+		app.serverError(w, r, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.logger.Error(err.Error(), slog.Any("method", r.Method), slog.Any("url", r.URL.RequestURI()))
+		app.serverError(w, r, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }

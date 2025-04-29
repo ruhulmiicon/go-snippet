@@ -3,28 +3,35 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"ruhulaminjr/internal/models"
 	"strconv"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	tmplFiles := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl",
-	}
-	ts, err := template.ParseFiles(tmplFiles...)
+	// tmplFiles := []string{
+	// 	"./ui/html/base.tmpl",
+	// 	"./ui/html/partials/nav.tmpl",
+	// 	"./ui/html/pages/home.tmpl",
+	// }
+	// ts, err := template.ParseFiles(tmplFiles...)
+	// if err != nil {
+	// 	app.serverError(w, r, err)
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// 	return
+	// }
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.serverError(w, r, err)
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// }
+	snippets, err := app.snippet.Latest()
 	if err != nil {
 		app.serverError(w, r, err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	for _, snnipet := range snippets {
+		fmt.Fprintf(w, "%+v \n", snnipet)
 	}
 }
 

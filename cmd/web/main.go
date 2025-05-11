@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,13 +15,14 @@ import (
 type application struct {
 	logger  *slog.Logger
 	snippet *models.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
 	addr := flag.String("addr", ":4000", "Http Network Address")
 	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "My sql database connection string")
 	flag.Parse()
-	logger := slog.New(slog.NewTextHandler(os.Stdin, &slog.HandlerOptions{
+	logger := slog.New(slog.NewJSONHandler(os.Stdin, &slog.HandlerOptions{
 		AddSource: true,
 	}))
 	db, err := openDB(*dsn)
@@ -29,11 +31,18 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+
+	}
 	app := application{
 		logger: logger,
 		snippet: &models.SnippetModel{
 			DB: db,
 		},
+		templateCache: templateCache,
 	}
 
 	logger.Info("Starting Server", "addr", *addr)

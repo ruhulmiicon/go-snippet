@@ -226,8 +226,8 @@ button:hover {
     border-radius: 3px;
 }
 
-.snippet pre {
-    padding: 18px;
+.snippet p {
+    padding: 0.75em 18px;
     border-top: 1px solid #E4E5E7;
     border-bottom: 1px solid #E4E5E7;
 }
